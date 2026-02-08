@@ -19,6 +19,14 @@ vi.mock('../features/pulse', () => ({
     useSyncMonitor: () => ({}),
 }));
 
+vi.mock('../features/snap', () => ({
+    WaveCursor: () => null,
+    WaveInput: () => null,
+    WAVE_DAMPING: 0.95,
+    WAVE_SENSITIVITY: 0.005,
+    WAVE_MAX_SPEED: 0.5,
+}));
+
 vi.mock('./PostProcessing', () => ({
     PostProcessing: () => null,
 }));
@@ -32,7 +40,13 @@ vi.mock('../engine/clock/clock.store', () => ({
 
 // Mock Leva to capture schema and support set function
 const mockSet = vi.fn();
-let capturedSchema: any = null;
+interface DevToolsSchema {
+    bpm: { onChange: (v: number) => void };
+}
+interface LevaSchema {
+    'Dev Tools': DevToolsSchema;
+}
+let capturedSchema: LevaSchema | null = null;
 
 vi.mock('leva', () => ({
     useControls: vi.fn().mockImplementation((schemaOrFn) => {
@@ -98,6 +112,7 @@ describe('Scene', () => {
 
         // Check if we captured the schema
         expect(capturedSchema).toBeTruthy();
+        if (!capturedSchema) return;
         expect(capturedSchema['Dev Tools']).toBeTruthy();
 
         // Simulate Leva onChange for BPM

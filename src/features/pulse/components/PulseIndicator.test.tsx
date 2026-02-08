@@ -18,7 +18,7 @@ vi.mock('../../../engine/clock', () => ({
 
 // Mock Leva to avoid Stitches issues
 vi.mock('leva', () => ({
-    useControls: vi.fn().mockImplementation((nameOrConfig, config) => {
+    useControls: vi.fn().mockImplementation((_nameOrConfig, config) => {
         const values = { syncOffset: 0 };
         const set = vi.fn();
 

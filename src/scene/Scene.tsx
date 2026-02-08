@@ -8,6 +8,12 @@ import { Controls } from './Controls';
 import { PulseIndicator, SyncDebugOverlay } from '../features/pulse';
 import { useKickPlayer } from '../features/rhythm';
 import { PostProcessing } from './PostProcessing';
+import { WaveCursor, WaveInput } from '../features/snap';
+import {
+    WAVE_DAMPING,
+    WAVE_SENSITIVITY,
+    WAVE_MAX_SPEED
+} from '../features/snap/wave.constants';
 
 export function Scene() {
     const { setBpm, bpm } = useClockStore();
@@ -28,7 +34,8 @@ export function Scene() {
         }, {
             collapsed: true,
             // Hide in production to avoid cluttering the view for end users
-            render: (get) => !import.meta.env.PROD
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            render: (_get) => !import.meta.env.PROD
         })
     }));
 
@@ -44,6 +51,38 @@ export function Scene() {
         kickMuted: { value: false, label: 'Kick Mute' },
     });
 
+    // Wave mode controls (Dev Tools - hidden in production)
+    useControls('Wave Mode', {
+        damping: {
+            value: WAVE_DAMPING,
+            min: 0.9,
+            max: 0.99,
+            step: 0.01,
+            label: 'Damping',
+            hint: 'Higher = more momentum'
+        },
+        sensitivity: {
+            value: WAVE_SENSITIVITY,
+            min: 0.001,
+            max: 0.02,
+            step: 0.001,
+            label: 'Sensitivity',
+            hint: 'Mouse to velocity multiplier'
+        },
+        maxSpeed: {
+            value: WAVE_MAX_SPEED,
+            min: 0.1,
+            max: 2.0,
+            step: 0.1,
+            label: 'Max Speed',
+            hint: 'Velocity cap'
+        }
+    }, {
+        collapsed: true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        render: (_get) => !import.meta.env.PROD
+    });
+
     useKickPlayer(kickVolume, kickMuted);
 
     return (
@@ -54,7 +93,10 @@ export function Scene() {
             <Controls />
             <PulseIndicator />
             <SyncDebugOverlay />
+            <WaveInput />
+            <WaveCursor height={0.1} />
             <PostProcessing />
         </>
     );
 }
+
