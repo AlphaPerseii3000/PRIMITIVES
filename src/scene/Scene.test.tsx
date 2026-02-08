@@ -20,6 +20,33 @@ vi.mock('./PostProcessing', () => ({
     PostProcessing: () => null,
 }));
 
+// Mock Leva to prevent Stitches CSS insertion errors in tests
+vi.mock('leva', () => ({
+    useControls: vi.fn().mockReturnValue({
+        kickVolume: -6,
+        kickMuted: false,
+    }),
+}));
+
+// Mock Tone.js Player to prevent crash in useKickPlayer
+vi.mock('tone', () => {
+    return {
+        MembraneSynth: vi.fn().mockImplementation(function () {
+            return {
+                toDestination: vi.fn().mockReturnThis(),
+                triggerAttackRelease: vi.fn(),
+                dispose: vi.fn(),
+                volume: { value: 0 },
+            };
+        }),
+        // Also need to mock other Tone parts if used in Scene via useKickPlayer -> useBeatCallback
+        Transport: {
+            scheduleRepeat: vi.fn(),
+            clear: vi.fn(),
+        },
+    };
+});
+
 describe('Scene', () => {
     it('renders without crashing and contains required components', async () => {
         const renderer = await ReactThreeTestRenderer.create(<Scene />);
