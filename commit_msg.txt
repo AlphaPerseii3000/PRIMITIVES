@@ -1,0 +1,10 @@
+feat(snap): add audio feedback for snap timing results
+
+- Implemented useSnapFeedback hook subscribing to snap signal bus
+- Added 3 distinct audio assets (Lock, Wobble, Reject) for rhythmic juice
+- Centralized players in snapAudio.ts singleton for preloading
+- Integrated explicit preloading in AudioProvider via Tone.loaded()
+- Added Leva controls for volume and muting in Scene
+- 100% test coverage for feedback logic and error handling
+
+Story: #3.5

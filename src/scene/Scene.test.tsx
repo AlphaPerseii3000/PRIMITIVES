@@ -113,6 +113,19 @@ vi.mock('tone', () => {
                 value: 120
             }
         },
+        Players: class {
+            constructor() {
+                return {
+                    toDestination: vi.fn().mockReturnThis(),
+                    volume: { value: 0 },
+                    player: vi.fn(),
+                    has: vi.fn(),
+                    loaded: true
+                };
+            }
+        },
+        gainToDb: vi.fn((v) => v),
+        now: vi.fn(() => 0),
     };
 });
 

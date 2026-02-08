@@ -2,6 +2,7 @@ import * as Tone from 'tone';
 import { createContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { AudioContextValue, AudioState } from './audio.types';
+import '../../features/snap/audio/snapAudio'; // Import to register players for preloading
 
 const AudioContext = createContext<AudioContextValue | null>(null);
 export { AudioContext };
@@ -16,6 +17,7 @@ export function AudioProvider({ children }: AudioProviderProps) {
     const start = useCallback(async () => {
         try {
             await Tone.start();
+            await Tone.loaded();
             const state = Tone.context.state as AudioState;
             if (state === 'running') {
                 Tone.Transport.start();
