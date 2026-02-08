@@ -9,7 +9,8 @@ import { PulseIndicator, SyncDebugOverlay } from '../features/pulse';
 import { useKickPlayer } from '../features/rhythm';
 import { PostProcessing } from './PostProcessing';
 import { WaveCursor, WaveInput } from '../features/snap';
-import { ParticleSystem, SpawnInput } from '../features/structures';
+import { useWaveStore } from '../features/snap/wave.store';
+import { ParticleSystem } from '../features/structures';
 import {
     WAVE_DAMPING,
     WAVE_SENSITIVITY,
@@ -35,14 +36,12 @@ export function Scene() {
         }, {
             collapsed: true,
             // Hide in production to avoid cluttering the view for end users
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            render: (_get) => !import.meta.env.PROD
+            render: () => !import.meta.env.PROD
         })
     }));
 
     // Sync Leva when store updates from other sources (e.g. initial load from persistence)
     // This ensures bi-directional sync
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useClockStore.subscribe((state) => {
         set({ bpm: state.bpm });
     });
@@ -60,7 +59,8 @@ export function Scene() {
             max: 0.99,
             step: 0.01,
             label: 'Damping',
-            hint: 'Higher = more momentum'
+            hint: 'Higher = more momentum',
+            onChange: (v) => useWaveStore.getState().setConfig({ damping: v })
         },
         sensitivity: {
             value: WAVE_SENSITIVITY,
@@ -68,7 +68,8 @@ export function Scene() {
             max: 0.02,
             step: 0.001,
             label: 'Sensitivity',
-            hint: 'Mouse to velocity multiplier'
+            hint: 'Mouse to velocity multiplier',
+            onChange: (v) => useWaveStore.getState().setConfig({ sensitivity: v })
         },
         maxSpeed: {
             value: WAVE_MAX_SPEED,
@@ -76,12 +77,38 @@ export function Scene() {
             max: 2.0,
             step: 0.1,
             label: 'Max Speed',
-            hint: 'Velocity cap'
-        }
+            hint: 'Velocity cap',
+            onChange: (v) => useWaveStore.getState().setConfig({ maxSpeed: v })
+        },
+        'Hold Mechanics': folder({
+            holdBrakeFactor: {
+                value: 0.7,
+                min: 0.1,
+                max: 1.0,
+                step: 0.05,
+                label: 'Brake Factor',
+                onChange: (v) => useWaveStore.getState().setConfig({ holdBrakeFactor: v })
+            },
+            chargeRate: {
+                value: 1.0,
+                min: 0.1,
+                max: 3.0,
+                step: 0.1,
+                label: 'Charge Rate',
+                onChange: (v) => useWaveStore.getState().setConfig({ chargeRate: v })
+            },
+            chargeLockThreshold: {
+                value: 0.99,
+                min: 0.5,
+                max: 1.0,
+                step: 0.01,
+                label: 'Lock Threshold',
+                onChange: (v) => useWaveStore.getState().setConfig({ chargeLockThreshold: v })
+            }
+        })
     }, {
         collapsed: true,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        render: (_get) => !import.meta.env.PROD
+        render: () => !import.meta.env.PROD
     });
 
     useKickPlayer(kickVolume, kickMuted);
@@ -97,7 +124,6 @@ export function Scene() {
             <WaveInput />
             <WaveCursor height={0.1} />
             <ParticleSystem />
-            <SpawnInput />
             <PostProcessing />
         </>
     );

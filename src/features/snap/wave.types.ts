@@ -14,6 +14,38 @@ export interface Vector2D {
 }
 
 /**
+ * Input state for hold-to-brake mechanic
+ */
+export interface InputState {
+    /** Whether the user is holding the interaction button (Left Click) */
+    holding: boolean;
+    /** Current charge level (0.0 to 1.0) */
+    charge: number;
+    /** Position to lock to when fully charged */
+    lockPosition: Vector2D | null;
+}
+
+
+
+/**
+ * Configuration for wave mechanics (tunable via Leva)
+ */
+export interface WaveConfig {
+    /** Damping factor multiplier when holding (0.0 to 1.0) */
+    holdBrakeFactor: number;
+    /** Rate at which charge accumulates per second */
+    chargeRate: number;
+    /** Charge threshold to trigger position lock */
+    chargeLockThreshold: number;
+    /** Base damping factor (0.92 to 0.98) */
+    damping: number;
+    /** Mouse sensitivity multiplier */
+    sensitivity: number;
+    /** Maximum velocity magnitude */
+    maxSpeed: number;
+}
+
+/**
  * Wave state for player navigation
  * Position is on the XZ plane (horizontal movement)
  * Velocity has momentum and damping for "wavy" feel
@@ -23,6 +55,10 @@ export interface WaveState {
     position: Vector2D;
     /** Current velocity vector (applies damping each frame) */
     velocity: Vector2D;
+    /** Input state for hold/charge mechanics */
+    input: InputState;
+    /** Runtime configuration */
+    config: WaveConfig;
 }
 
 /**
@@ -37,4 +73,12 @@ export interface WaveActions {
     setPosition: (pos: Vector2D) => void;
     /** Reset wave state to initial values */
     reset: () => void;
+    /** Start holding brake/charge */
+    startHold: () => void;
+    /** Release brake/charge */
+    endHold: () => void;
+    /** Update charge level */
+    updateCharge: (delta: number) => void;
+    /** Update configuration */
+    setConfig: (config: Partial<import('./wave.types').WaveConfig>) => void;
 }

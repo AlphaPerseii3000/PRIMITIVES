@@ -10,7 +10,7 @@ vi.mock('@react-three/fiber', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...actual as object,
-        useFrame: vi.fn((_callback) => {
+        useFrame: vi.fn(() => {
             // Mock implementation
             return null;
         }),
@@ -85,6 +85,7 @@ describe('useWaveMovement', () => {
         // Trigger frame with specific delta (e.g., 1 second)
         // At 1.0s delta, damping should be applied heavily (DAMPING^60)
         // Cast null to any to satisfy RootState type requirement in test
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         frameCallback(null as any, 1.0);
 
         const { velocity } = useWaveStore.getState();

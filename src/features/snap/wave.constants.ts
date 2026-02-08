@@ -42,6 +42,47 @@ export const WAVE_SENSITIVITY = 0.005;
 export const WAVE_MAX_SPEED = 0.5;
 
 // ============================================================================
+// Interaction & Timing
+// ============================================================================
+
+/**
+ * Maximum duration for a "tap" interaction (milliseconds).
+ * Below this = Spawn, Above this = Brake/Charge.
+ * @default 200
+ */
+export const TAP_THRESHOLD_MS = 200;
+
+// ============================================================================
+// Hold & Charge Mechanics
+// ============================================================================
+
+/**
+ * Damping factor applied when holding brake (multiplied by WAVE_DAMPING).
+ * Lower = Stronger braking.
+ * @default 0.7 - Stronger deceleration than normal
+ */
+export const HOLD_BRAKE_FACTOR = 0.7;
+
+/**
+ * Rate at which charge accumulates per second.
+ * 1.0 means 1 second to full charge.
+ * @default 1.0
+ */
+export const CHARGE_RATE = 1.0;
+
+/**
+ * Charge threshold to trigger position lock.
+ * @default 0.99
+ */
+export const CHARGE_LOCK_THRESHOLD = 0.99;
+
+/**
+ * Visual scale boost for cursor when fully charged.
+ * @default 2.0
+ */
+export const CHARGE_VISUAL_SCALE_BOOST = 2.0;
+
+// ============================================================================
 // Cursor Visual
 // ============================================================================
 

@@ -31,11 +31,36 @@ vi.mock('./PostProcessing', () => ({
     PostProcessing: () => null,
 }));
 
+// Create stable mocks for clock store
+const mockSetBpm = vi.fn();
 vi.mock('../engine/clock/clock.store', () => ({
-    useClockStore: vi.fn(() => ({
-        bpm: 120,
-        setBpm: vi.fn()
-    }))
+    useClockStore: Object.assign(
+        vi.fn(() => ({
+            bpm: 120,
+            setBpm: mockSetBpm
+        })),
+        { subscribe: vi.fn(() => vi.fn()) }
+    )
+}));
+
+vi.mock('../features/snap/wave.store', () => ({
+    useWaveStore: Object.assign(
+        vi.fn(() => ({
+            setConfig: vi.fn(),
+            startHold: vi.fn(),
+            endHold: vi.fn(),
+            updateCharge: vi.fn(),
+        })),
+        {
+            getState: vi.fn(() => ({
+                setConfig: vi.fn()
+            }))
+        }
+    )
+}));
+
+vi.mock('../features/structures', () => ({
+    ParticleSystem: () => null
 }));
 
 // Mock Leva to capture schema and support set function
