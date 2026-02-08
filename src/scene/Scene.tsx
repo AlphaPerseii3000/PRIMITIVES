@@ -16,6 +16,10 @@ import {
     WAVE_SENSITIVITY,
     WAVE_MAX_SPEED
 } from '../features/snap/wave.constants';
+import {
+    SNAP_PERFECT_WINDOW_MS,
+    SNAP_GOOD_WINDOW_MS
+} from '../features/snap/snap.constants';
 
 export function Scene() {
     const { setBpm, bpm } = useClockStore();
@@ -104,6 +108,29 @@ export function Scene() {
                 step: 0.01,
                 label: 'Lock Threshold',
                 onChange: (v) => useWaveStore.getState().setConfig({ chargeLockThreshold: v })
+            }
+        }),
+        'Timing': folder({
+            perfectWindowMs: {
+                value: SNAP_PERFECT_WINDOW_MS,
+                min: 20,
+                max: 100,
+                step: 5,
+                label: 'Perfect (ms)',
+                onChange: (v) => useWaveStore.getState().setConfig({ perfectWindowMs: v })
+            },
+            goodWindowMs: {
+                value: SNAP_GOOD_WINDOW_MS,
+                min: 60,
+                max: 200,
+                step: 5,
+                label: 'Good (ms)',
+                onChange: (v) => useWaveStore.getState().setConfig({ goodWindowMs: v })
+            },
+            showTimingVisualization: {
+                value: false,
+                label: 'Show Visualization',
+                hint: 'Display timing feedback in UI'
             }
         })
     }, {

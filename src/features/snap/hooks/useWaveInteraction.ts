@@ -9,13 +9,16 @@ import { useCallback, useRef } from 'react';
 import * as Tone from 'tone';
 import { useWaveStore } from '../wave.store';
 import { useSpawnParticle } from '../../structures/hooks/useSpawnParticle';
-import { TAP_THRESHOLD_MS } from '../wave.constants';
+import { useSnapTiming } from './useSnapTiming';
+import { useSnapStore } from '../stores/snap.store';
 import type { ThreeEvent } from '@react-three/fiber';
 
 export const useWaveInteraction = () => {
     const startHold = useWaveStore(state => state.startHold);
     const endHold = useWaveStore(state => state.endHold);
     const { spawnParticle } = useSpawnParticle();
+    const { evaluateRelease } = useSnapTiming();
+    const emitSnap = useSnapStore(state => state.emitSnap);
 
     // interaction state refs
     const startTimeRef = useRef<number>(0);
@@ -35,18 +38,23 @@ export const useWaveInteraction = () => {
     const onPointerUp = useCallback(() => {
         if (!isHoldingRef.current) return;
 
-        const durationSeconds = Tone.Transport.seconds - startTimeRef.current;
-        const durationMs = durationSeconds * 1000;
         isHoldingRef.current = false;
 
-        // Always end hold first to reset physics
+        // 1. Evaluate timing on release
+        const timingResult = evaluateRelease();
+
+        // 2. Emit result to Signal Bus
+        emitSnap(timingResult);
+
+        // 3. Reset physics state
         endHold();
 
-        // If short press, treat as Tap -> Spawn
-        if (durationMs < TAP_THRESHOLD_MS) {
+        // 4. Decision logic (AC5):
+        // Only spawn if quality is Lock or Wobble, regardless of duration.
+        if (timingResult.quality !== 'reject') {
             spawnParticle();
         }
-    }, [endHold, spawnParticle]);
+    }, [endHold, spawnParticle, evaluateRelease, emitSnap]);
 
     const onPointerLeave = useCallback(() => {
         if (isHoldingRef.current) {
