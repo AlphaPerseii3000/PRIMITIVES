@@ -43,6 +43,10 @@ export interface WaveConfig {
     sensitivity: number;
     /** Maximum velocity magnitude */
     maxSpeed: number;
+    /** Timing window for 'lock' (perfect) in ms */
+    perfectWindowMs: number;
+    /** Timing window for 'wobble' (good) in ms */
+    goodWindowMs: number;
 }
 
 /**

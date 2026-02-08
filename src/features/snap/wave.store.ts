@@ -35,7 +35,9 @@ const INITIAL_STATE: WaveState = {
         chargeLockThreshold: CHARGE_LOCK_THRESHOLD,
         damping: WAVE_DAMPING,
         sensitivity: WAVE_SENSITIVITY,
-        maxSpeed: WAVE_MAX_SPEED
+        maxSpeed: WAVE_MAX_SPEED,
+        perfectWindowMs: 40,
+        goodWindowMs: 90
     }
 };
 
