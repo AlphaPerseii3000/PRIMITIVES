@@ -2,9 +2,11 @@
  * WaveInput Component
  * 
  * Invisible plane that captures pointer movement for wave navigation.
+ * Also handles "Tap to Spawn" and "Hold to Brake/Charge" interactions.
  * Sits at Y=0 on the XZ plane, rotated to face up.
  */
 import { useWaveMovement } from '../hooks/useWaveMovement';
+import { useWaveInteraction } from '../hooks/useWaveInteraction';
 import type { ThreeEvent } from '@react-three/fiber';
 
 // Large enough to capture all pointer events
@@ -24,12 +26,16 @@ const CAPTURE_PLANE_SIZE = 2000;
  */
 export const WaveInput = () => {
     const { pointerMoveHandler } = useWaveMovement();
+    const { handlers: interactionHandlers } = useWaveInteraction();
 
     return (
         <mesh
             visible={false}
             position={[0, 0, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
+            onPointerDown={interactionHandlers.onPointerDown}
+            onPointerUp={interactionHandlers.onPointerUp}
+            onPointerLeave={interactionHandlers.onPointerLeave}
             onPointerMove={(e: ThreeEvent<PointerEvent>) => {
                 // Use native event for movementX/Y
                 pointerMoveHandler({

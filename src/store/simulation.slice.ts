@@ -15,6 +15,7 @@ export interface SimulationActions {
     removeNode: (id: NodeId) => boolean;
     clearNodes: () => void;
     getNode: (id: NodeId) => ParticleNode | undefined;
+    reset: () => void;
 }
 
 export type SimulationSlice = SimulationState & SimulationActions;
@@ -79,5 +80,9 @@ export const createSimulationSlice: StateCreator<
 
     getNode: (id: NodeId) => {
         return get().nodes.get(id);
+    },
+
+    reset: () => {
+        set({ ...INITIAL_STATE, nodes: new Map() });
     },
 });

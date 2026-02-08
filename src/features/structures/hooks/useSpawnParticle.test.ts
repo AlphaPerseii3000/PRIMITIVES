@@ -11,6 +11,7 @@ vi.mock('../../snap/wave.store', () => {
     const getState = vi.fn(() => ({ position: { x: 5, z: 10 } }));
     const useWaveStore = vi.fn((selector) => selector(getState()));
     // Attach getState to the hook
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (useWaveStore as any).getState = getState;
 
     return { useWaveStore };
@@ -21,9 +22,11 @@ describe('useSpawnParticle', () => {
 
     beforeEach(async () => {
         vi.clearAllMocks();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (useStore as any).mockImplementation((selector: any) => selector({ addNode: mockAddNode }));
         // Mock default state for getState
         const { useWaveStore } = await import('../../snap/wave.store');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (useWaveStore.getState as any).mockReturnValue({ position: { x: 5, z: 10 } });
     });
 

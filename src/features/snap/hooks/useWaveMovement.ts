@@ -34,7 +34,6 @@ import { useWaveStore } from '../wave.store';
  */
 export const useWaveMovement = () => {
     const updateVelocity = useWaveStore(state => state.updateVelocity);
-    const applyDamping = useWaveStore(state => state.applyDamping);
 
 
     /**
@@ -48,20 +47,21 @@ export const useWaveMovement = () => {
         const deltaY = event.movementY;
 
         // Map Y movement to Z axis (screen Y → world Z)
-        // Screen Y is down (positive), World Z forward is negative?
-        // Wait, standard 3D: Cam looks down -Z? usually.
-        // Let's stick to: Mouse UP (negative Y) -> Move Forward (Negative Z)
-        // MovementY is negative when moving UP.
-        // So we want Negative Y -> Negative Z.
-        // Therefore: z: deltaY ( -10 -> -10 )
         updateVelocity({ x: deltaX, z: deltaY });
     }, [updateVelocity]);
 
     /**
      * Apply damping every frame for smooth deceleration.
+     * Also accumulate charge if holding.
      */
     useFrame((_state, delta) => {
+        const { applyDamping, updateCharge, input } = useWaveStore.getState();
+
         applyDamping(delta);
+
+        if (input.holding) {
+            updateCharge(delta);
+        }
     });
 
     return {

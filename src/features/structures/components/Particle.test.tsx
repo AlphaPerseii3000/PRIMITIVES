@@ -15,6 +15,7 @@ describe('Particle component', () => {
     });
 
     it('renders nothing if node is not found', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (useStore as any).mockImplementation((selector: any) => selector({ nodes: new Map() }));
 
         const renderer = await ReactThreeTestRenderer.create(<Particle id="none" />);
@@ -32,6 +33,7 @@ describe('Particle component', () => {
         const mockMap = new Map();
         mockMap.set('p1', mockNode);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (useStore as any).mockImplementation((selector: any) => selector({ nodes: mockMap }));
 
         const renderer = await ReactThreeTestRenderer.create(<Particle id="p1" />);
