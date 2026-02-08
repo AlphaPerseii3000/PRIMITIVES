@@ -14,6 +14,9 @@ vi.mock('./Controls', () => ({
 
 vi.mock('../features/pulse', () => ({
     PulseIndicator: () => null,
+    SyncDebugOverlay: () => null,
+    useSyncStore: () => vi.fn(),
+    useSyncMonitor: () => ({}),
 }));
 
 vi.mock('./PostProcessing', () => ({
