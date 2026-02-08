@@ -9,6 +9,7 @@ import { PulseIndicator, SyncDebugOverlay } from '../features/pulse';
 import { useKickPlayer } from '../features/rhythm';
 import { PostProcessing } from './PostProcessing';
 import { WaveCursor, WaveInput } from '../features/snap';
+import { useSnapFeedback } from '../features/snap/hooks/useSnapFeedback';
 import { useWaveStore } from '../features/snap/wave.store';
 import { ParticleSystem } from '../features/structures';
 import {
@@ -24,7 +25,6 @@ import {
 export function Scene() {
     const { setBpm, bpm } = useClockStore();
 
-    // Leva controls
     // Leva controls
     const [, set] = useControls(() => ({
         'Dev Tools': folder({
@@ -137,6 +137,21 @@ export function Scene() {
         collapsed: true,
         render: () => !import.meta.env.PROD
     });
+
+    // Snap Audio Controls
+    const { snapVolume, snapMuted } = useControls('Snap Audio', {
+        snapVolume: {
+            value: 0.8,
+            min: 0,
+            max: 1,
+            step: 0.05,
+            label: 'Volume',
+            hint: 'Linear gain (0-1)'
+        },
+        snapMuted: { value: false, label: 'Mute' },
+    }, { collapsed: true });
+
+    useSnapFeedback({ volume: snapVolume, muted: snapMuted });
 
     useKickPlayer(kickVolume, kickMuted);
 
