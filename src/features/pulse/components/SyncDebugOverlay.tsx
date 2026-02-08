@@ -1,4 +1,5 @@
 import { useSyncStore } from '../stores/sync.store';
+import { useClockStore } from '../../../engine/clock/clock.store';
 import { Html } from '@react-three/drei';
 import { useControls } from 'leva';
 import { SYNC_HISTORY_SIZE } from '../stores/sync.store';
@@ -7,8 +8,12 @@ import { SYNC_HISTORY_SIZE } from '../stores/sync.store';
 export const THRESHOLD_PERFECT = 30;
 export const THRESHOLD_GOOD = 60;
 
+// Maximum height of history bars in pixels
+const MAX_HISTORY_HEIGHT_PX = 30;
+
 export const SyncDebugOverlay = () => {
     const { currentDelta, averageDelta, maxDelta, minDelta, history } = useSyncStore();
+    const { bpm } = useClockStore();
 
     const { showDebug } = useControls('Sync Debug', {
         showDebug: false
@@ -39,7 +44,10 @@ export const SyncDebugOverlay = () => {
                 minWidth: '200px',
                 pointerEvents: 'auto'
             }}>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', borderBottom: '1px solid #444' }}>AVG Sync Delta</h3>
+                <div style={{ margin: '0 0 8px 0', borderBottom: '1px solid #444', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ margin: 0, fontSize: '14px' }}>AVG Sync Delta</h3>
+                    <span style={{ fontSize: '12px', color: '#888' }}>{Math.round(bpm)} BPM</span>
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', fontSize: '12px' }}>
                     <span>Current:</span>
@@ -63,11 +71,11 @@ export const SyncDebugOverlay = () => {
                     </span>
                 </div>
 
-                <div style={{ marginTop: '8px', height: '30px', display: 'flex', alignItems: 'flex-end', gap: '1px' }}>
+                <div style={{ marginTop: '8px', height: `${MAX_HISTORY_HEIGHT_PX}px`, display: 'flex', alignItems: 'flex-end', gap: '1px' }}>
                     {history.map((d, i) => (
                         <div key={i} style={{
                             width: '4px',
-                            height: `${Math.min(Math.abs(d), 30)}px`,
+                            height: `${Math.min(Math.abs(d), MAX_HISTORY_HEIGHT_PX)}px`,
                             backgroundColor: getColor(d),
                             opacity: 0.8
                         }} />
