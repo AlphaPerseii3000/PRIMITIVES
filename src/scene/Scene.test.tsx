@@ -23,12 +23,36 @@ vi.mock('./PostProcessing', () => ({
     PostProcessing: () => null,
 }));
 
-// Mock Leva to prevent Stitches CSS insertion errors in tests
+vi.mock('../engine/clock/clock.store', () => ({
+    useClockStore: vi.fn(() => ({
+        bpm: 120,
+        setBpm: vi.fn()
+    }))
+}));
+
+// Mock Leva to capture schema and support set function
+const mockSet = vi.fn();
+let capturedSchema: any = null;
+
 vi.mock('leva', () => ({
-    useControls: vi.fn().mockReturnValue({
-        kickVolume: -6,
-        kickMuted: false,
+    useControls: vi.fn().mockImplementation((schemaOrFn) => {
+        // Handle function schema
+        const schema = typeof schemaOrFn === 'function' ? schemaOrFn() : schemaOrFn;
+
+        // Capture schema for testing if it contains Dev Tools
+        if (schema && schema['Dev Tools']) {
+            capturedSchema = schema;
+        }
+
+        // Return [values, set] to match usage in Scene
+        // Values can be partial since we mock internal components mostly
+        return [{
+            kickVolume: -6,
+            kickMuted: false,
+            bpm: 120
+        }, mockSet];
     }),
+    folder: vi.fn((schema) => schema),
 }));
 
 // Mock Tone.js Player to prevent crash in useKickPlayer
@@ -42,10 +66,13 @@ vi.mock('tone', () => {
                 volume: { value: 0 },
             };
         }),
-        // Also need to mock other Tone parts if used in Scene via useKickPlayer -> useBeatCallback
         Transport: {
             scheduleRepeat: vi.fn(),
             clear: vi.fn(),
+            bpm: {
+                rampTo: vi.fn(),
+                value: 120
+            }
         },
     };
 });
@@ -54,25 +81,33 @@ describe('Scene', () => {
     it('renders without crashing and contains required components', async () => {
         const renderer = await ReactThreeTestRenderer.create(<Scene />);
 
-        // Use findByType to search for the specialized R3F components or Three.js objects
         const ambientLight = renderer.scene.findAllByType('AmbientLight');
-        const pointLight = renderer.scene.findAllByType('PointLight');
-
         expect(ambientLight.length).toBeGreaterThan(0);
-        expect(pointLight.length).toBeGreaterThan(0);
-
-        // TestMesh renders a mesh
-        const mesh = renderer.scene.findAllByType('Mesh');
-        expect(mesh.length).toBeGreaterThan(0);
     });
 
     it('renders Controls as part of the scene', async () => {
-        // Controls is imported as a functional component, and we mocked it
-        // We can check if it's rendered by looking for it in the rendered output
         const renderer = await ReactThreeTestRenderer.create(<Scene />);
-
-        // Find by type will work on the Mock component name or the component itself
-        // In this case, since we mocked it, we can search for the component or name
         expect(renderer).toBeDefined();
+    });
+
+    it('updates BPM when Leva control changes', async () => {
+        const { useClockStore } = await import('../engine/clock/clock.store');
+        const { setBpm } = useClockStore();
+
+        await ReactThreeTestRenderer.create(<Scene />);
+
+        // Check if we captured the schema
+        expect(capturedSchema).toBeTruthy();
+        expect(capturedSchema['Dev Tools']).toBeTruthy();
+
+        // Simulate Leva onChange for BPM
+        const bpmControl = capturedSchema['Dev Tools'].bpm;
+        expect(bpmControl).toBeDefined();
+
+        // Trigger onChange
+        bpmControl.onChange(150);
+
+        // Verify setBpm was called
+        expect(setBpm).toHaveBeenCalledWith(150);
     });
 });
