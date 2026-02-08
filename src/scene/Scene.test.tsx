@@ -8,12 +8,7 @@ vi.mock('r3f-perf', () => ({
     Perf: () => null,
 }));
 
-// Mock ResizeObserver for jsdom
-global.ResizeObserver = class ResizeObserver {
-    observe() { }
-    unobserve() { }
-    disconnect() { }
-};
+// ResizeObserver mock moved to src/test/setup.ts
 
 describe('Scene', () => {
     it('renders without crashing and contains required components', async () => {
