@@ -20,7 +20,7 @@ describe('Controls', () => {
 
     // Verify OrbitControls was called with expected props as the first argument
     expect(mockOrbitControls).toHaveBeenCalled();
-    const props = mockOrbitControls.mock.calls[0][0];
+    const props = mockOrbitControls.mock.calls[0]![0];
 
     expect(props).toMatchObject({
       makeDefault: true,
