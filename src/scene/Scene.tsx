@@ -9,6 +9,7 @@ import { PulseIndicator, SyncDebugOverlay } from '../features/pulse';
 import { useKickPlayer } from '../features/rhythm';
 import { PostProcessing } from './PostProcessing';
 import { WaveCursor, WaveInput } from '../features/snap';
+import { ParticleSystem, SpawnInput } from '../features/structures';
 import {
     WAVE_DAMPING,
     WAVE_SENSITIVITY,
@@ -95,6 +96,8 @@ export function Scene() {
             <SyncDebugOverlay />
             <WaveInput />
             <WaveCursor height={0.1} />
+            <ParticleSystem />
+            <SpawnInput />
             <PostProcessing />
         </>
     );
