@@ -37,7 +37,10 @@ describe('AudioProvider', () => {
     });
 
     it('sets isReady = true after successful start()', async () => {
-        (Tone.start as any).mockResolvedValue(undefined);
+        // Mock implementation that updates the state
+        (Tone.start as any).mockImplementation(async () => {
+            (Tone.context.state as any) = 'running';
+        });
 
         render(
             <AudioProvider>
@@ -46,12 +49,7 @@ describe('AudioProvider', () => {
         );
 
         const button = screen.getByText('Start');
-
-        // Simulate clicking start and Tone.context.state changing to running
         fireEvent.click(button);
-
-        // In actual implementation, Tone.context.state is what we check
-        (Tone.context.state as any) = 'running';
 
         await waitFor(() => {
             expect(screen.getByTestId('status')).toHaveTextContent('ready');

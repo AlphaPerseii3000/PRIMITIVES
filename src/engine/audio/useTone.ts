@@ -4,7 +4,8 @@ import { AudioContext } from './AudioProvider';
 export function useTone() {
     const context = useContext(AudioContext);
     if (!context) {
-        throw new Error('useTone must be used within AudioProvider');
+        console.error('[PRIMITIVES:Audio] useTone must be used within AudioProvider. Returning fallback state.');
+        return { isReady: false, start: async () => { } };
     }
     return context;
 }
