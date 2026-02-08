@@ -6,6 +6,7 @@ __pycache__/
 # BMAD & Agent directories
 _bmad/
 _bmad-output/
+_bmad-custom-backup-temp/
 .agent/
 .gemini/
 
