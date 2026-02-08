@@ -24,7 +24,7 @@ describe('AudioProvider', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         // Default state
-        (Tone.context.state as any) = 'suspended';
+        (Tone.context as { state: string }).state = 'suspended';
     });
 
     it('starts with isReady = false', () => {
@@ -38,8 +38,8 @@ describe('AudioProvider', () => {
 
     it('sets isReady = true after successful start()', async () => {
         // Mock implementation that updates the state
-        (Tone.start as any).mockImplementation(async () => {
-            (Tone.context.state as any) = 'running';
+        vi.mocked(Tone.start).mockImplementation(async () => {
+            (Tone.context as { state: string }).state = 'running';
         });
 
         render(
@@ -59,7 +59,7 @@ describe('AudioProvider', () => {
     });
 
     it('remains not ready if Tone.start fails', async () => {
-        (Tone.start as any).mockRejectedValue(new Error('Audio failure'));
+        vi.mocked(Tone.start).mockRejectedValue(new Error('Audio failure'));
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
 
         render(

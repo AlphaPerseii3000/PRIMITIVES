@@ -32,13 +32,25 @@ In **PRIMITIVES**, you alternate between a fluid **Wave** state to hunt for elem
 - Node.js (Latest LTS)
 - NPM or PNPM
 
-### Installation
-```bash
-git clone https://github.com/AlphaPerseii3000/PRIMITIVES.git
-cd PRIMITIVES
-npm install
-npm run dev
-```
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server with HMR |
+| `npm run build` | Build for production (TypeScript + Vite) |
+| `npm run preview` | Preview production build locally |
+| `npm run test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
+| `npm run lint` | Lint code with ESLint |
+| `npm run lint:fix` | Lint and auto-fix issues |
+| `npm run type-check` | Type-check without emitting |
+
+### Development Workflow
+
+1.  **Start the dev server:** `npm run dev`
+2.  **Run tests in watch mode:** `npm run test:watch`
+3.  **Before committing, run:** `npm run lint && npm run type-check && npm run test`
 
 ## 🗺️ Roadmap
 

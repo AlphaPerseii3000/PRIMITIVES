@@ -13,14 +13,14 @@ describe('LoadingScreen', () => {
     });
 
     it('renders PRIMITIVES text', () => {
-        (useTone as any).mockReturnValue({ isReady: false, start: vi.fn() });
+        vi.mocked(useTone).mockReturnValue({ isReady: false, start: vi.fn() });
         render(<LoadingScreen />);
         expect(screen.getByText('PRIMITIVES')).toBeInTheDocument();
     });
 
     it('calls start on click', () => {
         const start = vi.fn();
-        (useTone as any).mockReturnValue({ isReady: false, start });
+        vi.mocked(useTone).mockReturnValue({ isReady: false, start });
         render(<LoadingScreen />);
         fireEvent.click(screen.getByText('PRIMITIVES'));
         expect(start).toHaveBeenCalled();
@@ -30,11 +30,11 @@ describe('LoadingScreen', () => {
         const { rerender } = render(<LoadingScreen />);
 
         // Initial state
-        (useTone as any).mockReturnValue({ isReady: false, start: vi.fn() });
+        vi.mocked(useTone).mockReturnValue({ isReady: false, start: vi.fn() });
         expect(screen.getByText('PRIMITIVES')).toBeVisible();
 
         // Update to ready
-        (useTone as any).mockReturnValue({ isReady: true, start: vi.fn() });
+        vi.mocked(useTone).mockReturnValue({ isReady: true, start: vi.fn() });
         rerender(<LoadingScreen />);
 
         // Should have fading class/style

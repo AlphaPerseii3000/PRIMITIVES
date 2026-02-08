@@ -9,13 +9,19 @@ export function LoadingScreen() {
 
     useEffect(() => {
         if (isReady) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsFading(true);
-            const timer = setTimeout(() => {
-                setShouldRender(false);
-            }, 500); // Match transition duration
-            return () => clearTimeout(timer);
         }
     }, [isReady]);
+
+    useEffect(() => {
+        if (isFading) {
+            const timer = setTimeout(() => {
+                setShouldRender(false);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [isFading]);
 
     if (!shouldRender) return null;
 
