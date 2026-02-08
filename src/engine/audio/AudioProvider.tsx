@@ -18,8 +18,9 @@ export function AudioProvider({ children }: AudioProviderProps) {
             await Tone.start();
             const state = Tone.context.state as AudioState;
             if (state === 'running') {
+                Tone.Transport.start();
                 setIsReady(true);
-                console.log('[PRIMITIVES:Audio] AudioContext started');
+                console.log('[PRIMITIVES:Audio] AudioContext started, Transport started');
             }
         } catch (error) {
             console.error('[PRIMITIVES:Audio] Failed to start AudioContext', error);
