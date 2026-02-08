@@ -12,6 +12,14 @@ vi.mock('./Controls', () => ({
     Controls: () => null,
 }));
 
+vi.mock('../features/pulse', () => ({
+    PulseIndicator: () => null,
+}));
+
+vi.mock('./PostProcessing', () => ({
+    PostProcessing: () => null,
+}));
+
 describe('Scene', () => {
     it('renders without crashing and contains required components', async () => {
         const renderer = await ReactThreeTestRenderer.create(<Scene />);
