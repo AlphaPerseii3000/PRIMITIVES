@@ -16,6 +16,26 @@ vi.mock('../../../engine/clock', () => ({
     }),
 }));
 
+// Mock Leva to avoid Stitches issues
+vi.mock('leva', () => ({
+    useControls: vi.fn().mockImplementation((nameOrConfig, config) => {
+        const values = { syncOffset: 0 };
+        const set = vi.fn();
+
+        // If config is provided, it's the factory version [values, set]
+        if (config) {
+            return [values, set];
+        }
+        // Otherwise it's the simple version
+        return values;
+    }),
+}));
+
+// Mock useSyncStore
+vi.mock('../../pulse', () => ({
+    useSyncStore: () => vi.fn(),
+}));
+
 describe('PulseIndicator', () => {
     it('renders without crashing', async () => {
         const renderer = await ReactThreeTestRenderer.create(<PulseIndicator />);
@@ -67,4 +87,3 @@ describe('PulseIndicator', () => {
         expect(material.emissiveIntensity).toBeGreaterThan(0);
     });
 });
-

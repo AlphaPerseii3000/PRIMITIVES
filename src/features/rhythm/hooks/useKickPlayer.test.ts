@@ -22,11 +22,17 @@ const { mockSynth, mockUseBeatCallback, MembraneSynthMock } = vi.hoisted(() => {
 // Mock Tone.js
 vi.mock('tone', () => ({
     MembraneSynth: MembraneSynthMock,
-    getContext: vi.fn().mockReturnValue({ state: 'running' }),
+    getContext: vi.fn().mockReturnValue({ state: 'running', currentTime: 10 }),
+    context: { currentTime: 10 },
     Transport: {
         scheduleRepeat: vi.fn().mockReturnValue(123),
         clear: vi.fn(),
     }
+}));
+
+// Mock useSyncStore
+vi.mock('../../pulse', () => ({
+    useSyncStore: () => vi.fn(),
 }));
 
 // Mock useBeatCallback

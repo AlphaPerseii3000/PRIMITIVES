@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as Tone from 'tone';
 import { useBeatCallback } from '../../../engine/clock';
+import { useSyncStore } from '../../pulse';
 
 /**
  * Hook to play a synthesized kick drum on every quarter note beat.
@@ -43,10 +44,22 @@ export const useKickPlayer = (volume: number = 0, muted: boolean = false) => {
     }, [volume, muted]);
 
     // Schedule playback on every quarter note ("4n")
+    const logAudioEvent = useSyncStore(state => state.logAudioEvent);
+
     useBeatCallback((time) => {
         if (synthRef.current && !muted) {
             // Precise trigger with Tone.Transport time
             synthRef.current.triggerAttackRelease('C1', '8n', time);
+
+            // Log for sync monitor (convert Tone time to Performance time)
+            // time is AudioContext time in seconds
+            // performance.now() is milliseconds
+            const audioContextTime = Tone.context.currentTime;
+            const perfNow = performance.now();
+            const offset = perfNow - (audioContextTime * 1000);
+            const triggerTimeMs = (time * 1000) + offset;
+
+            logAudioEvent(triggerTimeMs);
         }
     }, '4n');
 };

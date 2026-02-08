@@ -1,7 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh, MeshStandardMaterial } from 'three';
+import { useControls } from 'leva';
 import { usePulse } from '../../../engine/clock';
+import { useSyncStore } from '../../pulse';
 
 // ============================================================================
 // Animation Constants
@@ -42,15 +44,52 @@ export const PulseIndicator = ({ position = [0, 0, 0] }: PulseIndicatorProps) =>
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshStandardMaterial>(null);
     const clockRef = usePulse();
+    const lastPhaseRef = useRef(0);
+    const logVisualEvent = useSyncStore(state => state.logVisualEvent);
+    const storeSyncOffset = useSyncStore(state => state.syncOffset);
+    const setSyncOffset = useSyncStore(state => state.setSyncOffset);
+
+    // Sync state to Leva
+    const [, setLeva] = useControls('Sync', () => ({
+        syncOffset: {
+            value: storeSyncOffset,
+            min: -100,
+            max: 100,
+            step: 1,
+            label: 'Visual Offset (ms)',
+            onChange: (v) => setSyncOffset(v)
+        }
+    }));
+
+    // Update Leva if store changes (e.g. hydration)
+    useEffect(() => {
+        setLeva({ syncOffset: storeSyncOffset });
+    }, [storeSyncOffset, setLeva]);
 
     useFrame(() => {
         if (!meshRef.current || !materialRef.current || !clockRef.current) return;
 
         const { phase } = clockRef.current;
+        const beatDurationMs = 500; // 120 BPM
+        const offsetPhaseResult = storeSyncOffset / beatDurationMs;
+
+        // Apply offset to phase
+        let adjustedPhase = (phase - offsetPhaseResult);
+        // Normalize to 0-1
+        if (adjustedPhase < 0) adjustedPhase += 1;
+        if (adjustedPhase >= 1) adjustedPhase -= 1;
+
+        // Detect visual beat hit (phase wrap 1->0)
+        // Check if we just wrapped from high to low
+        if (lastPhaseRef.current > 0.9 && adjustedPhase < 0.1) {
+            // Log event at current frame time
+            logVisualEvent(performance.now());
+        }
+        lastPhaseRef.current = adjustedPhase;
 
         // Phase is 0 at beat hit, approaching 1 just before next beat.
         // Invert to get 1 at beat hit, 0 at rest.
-        const t = 1 - phase;
+        const t = 1 - adjustedPhase;
 
         // Cubic ease-out: quick attack, slow decay (punchy "hit" feel)
         const eased = t * t * t;
