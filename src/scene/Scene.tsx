@@ -21,6 +21,13 @@ import {
     SNAP_PERFECT_WINDOW_MS,
     SNAP_GOOD_WINDOW_MS
 } from '../features/snap/snap.constants';
+import { SnapFlash, SnapBurst, GhostPreview } from '../features/snap';
+import {
+    GHOST_OPACITY_MIN,
+    GHOST_OPACITY_MAX,
+    GHOST_EMISSIVE_PULSE_BOOST
+} from '../features/snap/ghost-preview.constants';
+import { useSnapVisualFeedback } from '../features/snap/hooks/useSnapVisualFeedback';
 
 export function Scene() {
     const { setBpm, bpm } = useClockStore();
@@ -153,6 +160,29 @@ export function Scene() {
 
     useSnapFeedback({ volume: snapVolume, muted: snapMuted });
 
+    // Snap Visual Controls
+    const { snapVisualEnabled, burstCount, burstDuration, bloomIntensity } = useControls('Snap Visual', {
+        snapVisualEnabled: { value: true, label: 'Enabled' },
+        burstCount: { value: 12, min: 0, max: 16, step: 1, label: 'Burst Count' },
+        burstDuration: { value: 500, min: 100, max: 1000, step: 50, label: 'Duration (ms)' },
+        bloomIntensity: { value: 4.0, min: 0, max: 10, step: 0.1, label: 'Bloom Intensity' },
+    }, { collapsed: true });
+
+    useSnapVisualFeedback({
+        enabled: snapVisualEnabled,
+        burstCount,
+        burstDuration,
+        bloomIntensity,
+    });
+
+    // Ghost Preview Controls
+    const { ghostEnabled, ghostOpacityMin, ghostOpacityMax, ghostPulseIntensity } = useControls('Ghost Preview', {
+        ghostEnabled: { value: true, label: 'Enabled' },
+        ghostOpacityMin: { value: GHOST_OPACITY_MIN, min: 0, max: 0.5, step: 0.01, label: 'Opacity Min' },
+        ghostOpacityMax: { value: GHOST_OPACITY_MAX, min: 0.3, max: 1.0, step: 0.01, label: 'Opacity Max' },
+        ghostPulseIntensity: { value: GHOST_EMISSIVE_PULSE_BOOST, min: 0, max: 3, step: 0.1, label: 'Pulse Intensity' },
+    }, { collapsed: true });
+
     useKickPlayer(kickVolume, kickMuted);
 
     return (
@@ -163,11 +193,19 @@ export function Scene() {
             <Controls />
             <PulseIndicator />
             <SyncDebugOverlay />
+            <SnapFlash />
+            <SnapBurst />
             <WaveInput />
             <WaveCursor height={0.1} />
+            <GhostPreview
+                enabled={ghostEnabled}
+                opacityMin={ghostOpacityMin}
+                opacityMax={ghostOpacityMax}
+                pulseIntensity={ghostPulseIntensity}
+                height={0.1}
+            />
             <ParticleSystem />
             <PostProcessing />
         </>
     );
 }
-
