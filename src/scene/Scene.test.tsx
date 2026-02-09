@@ -22,9 +22,16 @@ vi.mock('../features/pulse', () => ({
 vi.mock('../features/snap', () => ({
     WaveCursor: () => null,
     WaveInput: () => null,
+    SnapFlash: () => null,
+    GhostPreview: () => null,
+    SnapBurst: () => null,
     WAVE_DAMPING: 0.95,
     WAVE_SENSITIVITY: 0.005,
     WAVE_MAX_SPEED: 0.5,
+}));
+
+vi.mock('../features/snap/hooks/useSnapVisualFeedback', () => ({
+    useSnapVisualFeedback: vi.fn(),
 }));
 
 vi.mock('./PostProcessing', () => ({

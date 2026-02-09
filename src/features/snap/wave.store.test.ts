@@ -238,7 +238,9 @@ describe('wave.store', () => {
                     chargeLockThreshold: 0.99,
                     damping: 0.95,
                     sensitivity: 0.005,
-                    maxSpeed: 0.5
+                    maxSpeed: 0.5,
+                    perfectWindowMs: 40,
+                    goodWindowMs: 90
                 }
             };
 

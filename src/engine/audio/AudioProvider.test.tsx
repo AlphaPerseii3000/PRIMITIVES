@@ -7,7 +7,19 @@ import * as Tone from 'tone';
 // Mock Tone.js
 vi.mock('tone', () => ({
     start: vi.fn(),
+    loaded: vi.fn().mockResolvedValue(undefined),
     context: { state: 'suspended' },
+    Transport: {
+        start: vi.fn(),
+        stop: vi.fn(),
+    },
+    Players: class {
+        constructor() {
+            return {
+                toDestination: vi.fn().mockReturnThis(),
+            };
+        }
+    },
 }));
 
 function TestComponent() {

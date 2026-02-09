@@ -34,7 +34,8 @@ vi.mock('./useSnapTiming', () => ({
 
 vi.mock('../stores/snap.store', () => ({
     useSnapStore: Object.assign(
-        vi.fn((selector: (state: unknown) => unknown) => selector({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        vi.fn((selector: (state: any) => any) => selector({
             lastSnapResult: null,
             emitSnap: mockEmitSnap,
             clearSnap: vi.fn()
@@ -69,7 +70,8 @@ describe('useWaveInteraction', () => {
         mockEvaluateRelease.mockReturnValue({ quality: 'lock', deltaMs: 0, beatPosition: 1 });
 
         // Mocking zustand store selection for the hook
-        vi.mocked(useSnapStore).mockImplementation((selector: (state: unknown) => unknown) =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        vi.mocked(useSnapStore).mockImplementation((selector: (state: any) => any) =>
             selector({
                 lastSnapResult: null,
                 emitSnap: mockEmitSnap,
@@ -88,6 +90,7 @@ describe('useWaveInteraction', () => {
         const { handlers } = result.current;
 
         const stopPropagation = vi.fn();
+
         handlers.onPointerDown({ button: 0, stopPropagation } as unknown as ThreeEvent<PointerEvent>);
 
         expect(useWaveStore.getState().startHold).toHaveBeenCalled();
@@ -99,6 +102,7 @@ describe('useWaveInteraction', () => {
         const { handlers } = result.current;
 
         transport.seconds = 1.0;
+
         handlers.onPointerDown({ button: 0, stopPropagation: vi.fn() } as unknown as ThreeEvent<PointerEvent>);
 
         transport.seconds = 1.1; // 100ms
@@ -116,6 +120,7 @@ describe('useWaveInteraction', () => {
         const { handlers } = result.current;
 
         transport.seconds = 1.0;
+
         handlers.onPointerDown({ button: 0, stopPropagation: vi.fn() } as unknown as ThreeEvent<PointerEvent>);
 
         transport.seconds = 1.5; // 500ms
@@ -133,6 +138,7 @@ describe('useWaveInteraction', () => {
         const { handlers } = result.current;
 
         transport.seconds = 1.0;
+
         handlers.onPointerDown({ button: 0, stopPropagation: vi.fn() } as unknown as ThreeEvent<PointerEvent>);
 
         transport.seconds = 1.5; // 500ms
@@ -147,10 +153,10 @@ describe('useWaveInteraction', () => {
         const { result } = renderHook(() => useWaveInteraction());
         const { handlers } = result.current;
 
+
         handlers.onPointerDown({ button: 0, stopPropagation: vi.fn() } as unknown as ThreeEvent<PointerEvent>);
         handlers.onPointerLeave();
 
         expect(useWaveStore.getState().endHold).toHaveBeenCalled();
     });
 });
-
